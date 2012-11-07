@@ -73,7 +73,12 @@
 
 	</script>
    <script type="text/javascript">
-   
+		function getParameter(l_sName)
+		{
+			var l_oMatch = window.location.search.match(new RegExp("[?&]" + l_sName + "=([^&]*)"));
+			return ((l_oMatch == null) ? null : l_oMatch[1]);
+		};
+		
    	function loadJavaScript(fileName) {
 	   var head = document.getElementsByTagName('head')[0];
 	   var script = document.createElement('script');
@@ -103,8 +108,12 @@
 			nav.style.display = "block";
 			nav.innerHTML = request.responseText;
 		};
+		var directoryString = getParameter("directory");
+		directoryString = directoryString.replace(/\\/g,"/");
 		
-		var request = jQuery.ajax( {url: "http://localhost:8001/index.html?getFiles",
+		var request = jQuery.ajax( {url: 
+			
+			"http://localhost:8001/index.html?getFiles=" + directoryString,
 			success: displayCode});
 		
 	}

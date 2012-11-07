@@ -45,12 +45,10 @@ var server2 = connect(
 		var query = require('url').parse(request.url, true).query;
 		if (query != null) {
 		if (query.getFiles != null) {
-			fs.readFile(__dirname + '/share.js', function(error, content) {
 				response.writeHead(200, { 
 					'Content-Type': 'text/html'
 					,'Access-Control-Allow-Origin': '*'});
-				readDir(response, ["."], "");
-			});
+				readDir(response, [query.getFiles], "");
 		} else if (query.getFile != null) {
 			response.writeHead(200, { 
 					'Content-Type': 'text/html'
