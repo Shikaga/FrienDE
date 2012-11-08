@@ -128,12 +128,23 @@
 			editor = ace.edit("editor");
 			console.log(editor.getValue());
 			
+			editor.setTheme("ace/theme/monokai");
+			editor.getSession().setUseWrapMode(true);
+			
+			if (urlString.match(/.js$/) != null) {
+				editor.getSession().setMode("ace/mode/javascript");
+			}
+			if (urlString.match(/.html$/) != null) {
+				editor.getSession().setMode("ace/mode/html");
+			}
+			if (urlString.match(/.md$/) != null) {
+				editor.getSession().setMode("ace/mode/markdown");
+			}
 			editor.commands.addCommand({
 				name: 'save',
 				bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
 				exec: function() {saveCodeMirror(urlString)}
-			});
-			
+			});			
 				
 			editor.commands.addCommand({
 				name: 'close',
