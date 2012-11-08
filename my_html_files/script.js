@@ -51,7 +51,6 @@ function loadDirectory(directoryString) {
 		
 		request.responseText;
 		editor = ace.edit("editor");
-		console.log(editor.getValue());
 		
 		editor.setTheme("ace/theme/monokai");
 		editor.getSession().setUseWrapMode(true);
@@ -97,8 +96,6 @@ function loadDirectory(directoryString) {
 	};
 	
 	function saveCodeMirror(saveFile) {
-		//alert('fail');
-		//console.log(myCodeMirror.getValue());
 		var lines = editor.getValue().split("\n");
 		var requestString = lines.join("&line=");
 		var request = jQuery.ajax( {
