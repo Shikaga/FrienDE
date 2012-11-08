@@ -42,41 +42,38 @@ function loadDirectory(directoryString) {
 	
 }
 
- function loadCode(urlString) {
+var EditorHandler = function(urlString, request) {
+	cleanCodeEditor();
+	codeDiv.style.display = "block";
 	
-	function displayCode() {
+	request.responseText;
+	editor = ace.edit("editor");
+	
+	editor.setTheme("ace/theme/monokai");
+	editor.getSession().setUseWrapMode(true);
+	
+	if (urlString.match(/.js$/) != null) {
+		editor.getSession().setMode("ace/mode/javascript");
+	}
+	if (urlString.match(/.html$/) != null) {
+		editor.getSession().setMode("ace/mode/html");
+	}
+	if (urlString.match(/.md$/) != null) {
+		editor.getSession().setMode("ace/mode/markdown");
+	}
+	editor.commands.addCommand({
+		name: 'save',
+		bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
+		exec: function() {saveCodeMirror(urlString)}
+	});			
 		
-		cleanCodeEditor();
-		codeDiv.style.display = "block";
-		
-		request.responseText;
-		editor = ace.edit("editor");
-		
-		editor.setTheme("ace/theme/monokai");
-		editor.getSession().setUseWrapMode(true);
-		
-		if (urlString.match(/.js$/) != null) {
-			editor.getSession().setMode("ace/mode/javascript");
-		}
-		if (urlString.match(/.html$/) != null) {
-			editor.getSession().setMode("ace/mode/html");
-		}
-		if (urlString.match(/.md$/) != null) {
-			editor.getSession().setMode("ace/mode/markdown");
-		}
-		editor.commands.addCommand({
-			name: 'save',
-			bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
-			exec: function() {saveCodeMirror(urlString)}
-		});			
-			
-		editor.commands.addCommand({
-			name: 'close',
-			bindKey: {win: 'Esc', mac: 'Esc'},
-			exec: function() {closeCodeMirror()}
-		});
-		
-		sharejs.open(urlString.replace(/\//g, "_"), 'text', "http://" + document.location.hostname + ":8000/channel", function(error, docIn) {
+	editor.commands.addCommand({
+		name: 'close',
+		bindKey: {win: 'Esc', mac: 'Esc'},
+		exec: function() {closeCodeMirror()}
+	});
+	
+	sharejs.open(urlString.replace(/\//g, "_"), 'text', "http://" + document.location.hostname + ":8000/channel", function(error, docIn) {
 		docIn.attach_ace(editor);
 		if (editor.getValue() == "") {
 			editor.setValue(request.responseText);
@@ -84,6 +81,12 @@ function loadDirectory(directoryString) {
 		editor.moveCursorTo(0,0);
 		doc = docIn;
 	});
+};
+
+ function loadCode(urlString) {
+	
+	function displayCode() {
+		new EditorHandler(urlString, request);
 	};
 	
 	var request = jQuery.ajax( {url: "http://localhost:8001/index.html?getFile=" + urlString,
