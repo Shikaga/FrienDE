@@ -100,7 +100,7 @@
 		codeDiv.env = null;
 	}
 	
-	function loadDirectory() {
+	function loadDirectory(directoryString) {
 		
 		function displayCode() {
 			cleanCodeEditor();
@@ -108,8 +108,7 @@
 			nav.style.display = "block";
 			nav.innerHTML = request.responseText;
 		};
-		var directoryString = getParameter("directory");
-		directoryString = directoryString.replace(/\\/g,"/");
+
 		
 		var request = jQuery.ajax( {url: 
 			
@@ -181,7 +180,6 @@
 		 codeDiv = document.getElementById("editor");
 		 nav = document.getElementById("nav");
 		 
-		 urlString = "/Temp/temp-bladeset/blades/temp/src/temp/temp/temp/ExampleClass.js";
 		 directoryString = "/Temp/temp-bladeset/blades/temp";
 		 
 		 
@@ -194,7 +192,10 @@
 			closeCodeMirror();
 		});
 		
-		loadDirectory();
+		var directoryString = getParameter("directory");
+		directoryString = directoryString.replace(/\\/g,"/");
+		
+		loadDirectory(directoryString);	
 		loadSpecificCode();
 	  }
 

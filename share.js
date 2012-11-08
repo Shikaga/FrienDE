@@ -12,26 +12,28 @@ fs.readFile(__dirname + '/share.js', 'utf8', function (err,data) {
   console.log(data);
 });
 
-function readDir(response, directories, string) {
-	if (directories.length == 0) {
-		response.end("", 'utf-8');
-		return;
-	}
-	var directory = directories.shift();		
-		fs.stat(directory, function(err, stat) {
-			var fileLink = "<a onClick=\"loadCode('" + directory + "')\">" + "" + " + " + directory + "</a><br />"
-			response.write(fileLink, 'utf-8');
-			if (stat.isDirectory()) {
-				fs.readdir(directory, function(err, list) {				
-					list.forEach(function(file) {
-						directories.push(directory + "/" + file);
-					});
-					readDir(response, directories, string);
-				});
-			} else {
-				readDir(response, directories, string);
-			}
-		});
+function getDirectoryLink(directory, path) {
+	var fileLink = "<a onClick=\"loadDirectory('" + directory + "/" + path + "')\">" + "" + " + " + path + "/" + "</a><br />";
+	return fileLink;
+}
+
+function getFileLink(directory, path) {
+	var fileLink = "<a onClick=\"loadCode('" + directory + "/" + path + "')\">" + "" + " + " + path + "</a><br />";
+	return fileLink;
+}
+
+function readDir(response, directory, string) {
+	paths = fs.readdirSync(directory);
+	response.write(getDirectoryLink(directory,".."), 'utf-8');
+	paths.forEach(function(path) {
+		if (fs.statSync(directory + "/" + path).isDirectory()) {
+			var fileLink = getDirectoryLink(directory,path);
+		} else {
+			var fileLink = getFileLink(directory, path);
+		}
+		response.write(fileLink, 'utf-8');
+	});
+	response.end();
 };
 
 var server = connect(
@@ -48,7 +50,7 @@ var server2 = connect(
 				response.writeHead(200, { 
 					'Content-Type': 'text/html'
 					,'Access-Control-Allow-Origin': '*'});
-				readDir(response, [query.getFiles], "");
+				readDir(response, query.getFiles, "");
 		} else if (query.getFile != null) {
 			response.writeHead(200, { 
 					'Content-Type': 'text/html'
@@ -62,30 +64,22 @@ var server2 = connect(
 			
 		} else if (query.saveFile != null) {
 			response.writeHead(200, { 
-					'Content-Type': 'text/html'
-					,'Access-Control-Allow-Origin': '*'});
-					//console.log("ZZZZ", );
-					if (typeof query.line === 'string') {
-						file = query.line;
-					} else {
-						file = query.line.join("\n");
-					}
-					fs.writeFile(query.saveFile, file, function(err) {
-						if(err) {
-							console.log(err);
-							response.end("File Save failed. Is the file locked perhaps?", 'utf-8');
-						} else {
-							console.log("The file was saved!");
-							response.end("Saved", 'utf-8');
-						}
-					}); 
-			//fs.readFile(query.saveFile, 'utf8', 
-			//	function(err, data) {
-			//		console.log("DATA", data);
-					
-			//	}
-			//)
-			
+				'Content-Type': 'text/html'
+				,'Access-Control-Allow-Origin': '*'});
+			if (typeof query.line === 'string') {
+				file = query.line;
+			} else {
+				file = query.line.join("\n");
+			}
+			fs.writeFile(query.saveFile, file, function(err) {
+				if(err) {
+					console.log(err);
+					response.end("File Save failed. Is the file locked perhaps?", 'utf-8');
+				} else {
+					console.log("The file was saved!");
+					response.end("Saved", 'utf-8');
+				}
+			}); 			
 		} else {
 			response.writeHead(404);
 			response.end();
