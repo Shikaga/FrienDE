@@ -146,6 +146,7 @@
 			if (editor.getValue() == "") {
 				editor.setValue(request.responseText);
 			}
+			editor.moveCursorTo(0,0);
 			doc = docIn;
 		});
 		};
