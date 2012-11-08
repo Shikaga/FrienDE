@@ -1,0 +1,43 @@
+.navbar {
+	background-color: #35393D;
+	color:white;
+}
+
+.right {
+	float:right;
+}
+
+.left {
+	float:left;
+}
+
+a.close {
+	background: url(../resources/images/close.png) no-repeat 0 2px;
+	width:19px;
+	height:19px;
+	display: inline block;
+	float:right;
+	margin: 10px;
+}
+
+a.save {
+	background: url(../resources/images/save.png) no-repeat;
+	width:19px;
+	height:19px;
+	display: inline block;
+	float:right;
+	margin: 10px;
+}
+
+.search {
+	background-color: #35393D;
+}
+
+.search input {
+	width: 100%;
+	height: 100%;
+	padding-left: 40px;
+	border: 0;
+	color: white;
+	background: url('../resources/images/search.png') 15px 19px no-repeat;
+}
