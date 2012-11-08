@@ -17,6 +17,14 @@ function getDirectoryLink(directory, path) {
 	return fileLink;
 }
 
+function getParentDirectoryLink(directory, path) {
+	var parent =  directory.replace(/\/[^/]*\/$/, "");
+	var parent =  parent.replace(/\/[^/]*$/, "");
+	console.log("PARENT", directory, parent);
+	var fileLink = "<a onClick=\"loadDirectory('" + parent + "" + "')\">" + "" + " + " + ".." + "/" + "</a><br />";
+	return fileLink;
+}
+
 function getFileLink(directory, path) {
 	var fileLink = "<a onClick=\"loadCode('" + directory + "/" + path + "')\">" + "" + " + " + path + "</a><br />";
 	return fileLink;
@@ -24,7 +32,7 @@ function getFileLink(directory, path) {
 
 function readDir(response, directory, string) {
 	paths = fs.readdirSync(directory);
-	response.write(getDirectoryLink(directory,".."), 'utf-8');
+	response.write(getParentDirectoryLink(directory), 'utf-8');
 	paths.forEach(function(path) {
 		if (fs.statSync(directory + "/" + path).isDirectory()) {
 			var fileLink = getDirectoryLink(directory,path);
