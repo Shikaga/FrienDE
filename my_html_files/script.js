@@ -37,7 +37,7 @@ function loadDirectory(directoryString) {
 	
 	var request = jQuery.ajax( {url: 
 		
-		"http://localhost:8001/index.html?getFiles=" + directoryString,
+		"http://" + document.location.hostname + ":8001/index.html?getFiles=" + directoryString,
 		success: displayCode});
 	
 }
@@ -73,7 +73,9 @@ var EditorHandler = function(urlString, request) {
 		exec: function() {closeCodeMirror()}
 	});
 	
-	sharejs.open(urlString.replace(/\//g, "_"), 'text', "http://" + document.location.hostname + ":8000/channel", function(error, docIn) {
+	fileId = urlString.replace(/\//g, "_");
+	console.log(fileId + "x"); //To avoid Dom Exception 18 for some reason
+	sharejs.open(fileId, 'text', "http://" + document.location.hostname + ":8000/channel", function(error, docIn) {
 		docIn.attach_ace(editor);
 		if (editor.getValue() == "") {
 			editor.setValue(request.responseText);
@@ -89,7 +91,7 @@ var EditorHandler = function(urlString, request) {
 		new EditorHandler(urlString, request);
 	};
 	
-	var request = jQuery.ajax( {url: "http://localhost:8001/index.html?getFile=" + urlString,
+	var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":8001/index.html?getFile=" + urlString,
 	success: displayCode});
 };
 
@@ -102,7 +104,7 @@ var EditorHandler = function(urlString, request) {
 		var lines = editor.getValue().split("\n");
 		var requestString = lines.join("&line=");
 		var request = jQuery.ajax( {
-			url: "http://localhost:8001/index.html?saveFile=" + saveFile + "&line=" + requestString,
+			url: "http://" + document.location.hostname + ":8001/index.html?saveFile=" + saveFile + "&line=" + requestString,
 			success: function() {}
 		});
 	};
