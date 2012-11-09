@@ -36,7 +36,8 @@ DirectoryHandler.prototype.displayCode = function(responseText) {
 };
 
 var EditorHandler = function(urlString, request) {
-	this.cleanCodeEditor();
+    var self = this;
+    this.cleanCodeEditor();
 	codeDiv.style.display = "block";
 	
 	request.responseText;
@@ -54,7 +55,7 @@ var EditorHandler = function(urlString, request) {
 	if (urlString.match(/.md$/) != null) {
 		editor.getSession().setMode("ace/mode/markdown");
 	}
-	var self = this;
+
 	editor.commands.addCommand({
 		name: 'save',
 		bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
@@ -85,13 +86,7 @@ EditorHandler.prototype.cleanCodeEditor = function() {
 }
 
 EditorHandler.prototype.save = function(saveFile) {
-    post("http://localhost.caplin.com:8001", {file: saveFile, body: editor.getValue()});
-//	var lines = editor.getValue().split("\n");
-//	var requestString = lines.join("&line=");
-//	var request = jQuery.ajax( {
-//		url: "http://" + document.location.hostname + ":" + port2 + "/index.html?saveFile=" + saveFile + "&line=" + requestString,
-//		success: function() {}
-//	});
+    post("http://" + document.location.hostname +":" + port2, {file: saveFile, body: editor.getValue()});
 }
 
  function loadCode(urlString) {
