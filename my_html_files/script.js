@@ -132,4 +132,8 @@ EditorHandler.prototype.save = function(saveFile) {
 	showIDE();
   }
 
+loadDirectory = function(directoryString) {
+	new DirectoryHandler(directoryString);	
+}
+
   initialise();
