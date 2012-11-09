@@ -86,60 +86,55 @@ EditorHandler.prototype.cleanCodeEditor = function() {
 }
 
 EditorHandler.prototype.save = function(saveFile) {
-    post("http://" + document.location.hostname +":" + port2, {file: saveFile, body: editor.getValue()});
+    $.ajax({  
+    type: "POST",  
+	url: "http://" + document.location.hostname +":" + port2,
+	data: {file: saveFile, body: editor.getValue()},
+	success: function() {  
+	}  
+    });  
 }
 
- function loadCode(urlString) {
+function loadCode(urlString) {
 	
 	function displayCode() {
 		new EditorHandler(urlString, request);
 	};
 	
-     var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":" + port2 + "/index.html?getFile=" + urlString,
-	success: displayCode});
+     var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":" + port2 + "/index.html?getFile=" + urlString, success: displayCode});
 };
 
-	function closeCodeMirror() { 
-		ide.style.display = "none";
-		document.body.focus();
-	};
+function closeCodeMirror() { 
+	ide.style.display = "none";
+	document.body.focus();
+};
   
-  var initialise = function()
-  {
-	 ide = document.getElementById("ide");
-	 codeDiv = document.getElementById("editor");
-	 nav = document.getElementById("nav");
-	 directoryString = "/Temp/temp-bladeset/blades/temp";
-	 
-	 
-	 function showIDE() {
-		ide.style.display = "block";
-	 }
-	key('ctrl+enter', showIDE);
-	
-	key('esc', function(){ 
-		closeCodeMirror();
-	});
-	
-	var directoryString = getParameter("directory");
-	directoryString = directoryString.replace(/\\/g,"/");
-	
-	new DirectoryHandler(directoryString);	
-	showIDE();
-  }
+var initialise = function()
+{
+    ide = document.getElementById("ide");
+    codeDiv = document.getElementById("editor");
+    nav = document.getElementById("nav");
+    directoryString = "/Temp/temp-bladeset/blades/temp";
+ 
+ 
+    function showIDE() {
+	    ide.style.display = "block";
+    }
+    key('ctrl+enter', showIDE);
+
+    key('esc', function(){ 
+	    closeCodeMirror();
+    });
+
+    var directoryString = getParameter("directory");
+    directoryString = directoryString.replace(/\\/g,"/");
+
+    new DirectoryHandler(directoryString);	
+    showIDE();
+}
 
 loadDirectory = function(directoryString) {
 	new DirectoryHandler(directoryString);	
-}
-
-function post(path, parameters) {
-    $.ajax({  
-	type: "POST",  
-	url: path,  
-	data: parameters,  
-	success: function() {  
-	}  
-    });  
 }
 
   initialise();
