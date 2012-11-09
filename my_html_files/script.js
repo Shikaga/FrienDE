@@ -1,3 +1,6 @@
+port = parseInt(document.location.port);
+port2 = port + 1;
+
 function getParameter(l_sName)
 {
 	var l_oMatch = window.location.search.match(new RegExp("[?&]" + l_sName + "=([^&]*)"));
@@ -8,7 +11,7 @@ function loadJavaScript(fileName) {
    var head = document.getElementsByTagName('head')[0];
    var script = document.createElement('script');
    script.type = 'text/javascript';
-   script.src = "http://" + document.location.hostname + ":8000/" + fileName;
+   script.src = "http://" + document.location.hostname + ":" + port + "/" + fileName;
    head.appendChild(script);
 }
 
@@ -22,7 +25,7 @@ setTimeout(function() {
 
 var DirectoryHandler = function(directoryString) {
 	jQuery.ajax( {
-		url: "http://" + document.location.hostname + ":8001/index.html?getFiles=" + directoryString,
+		url: "http://" + document.location.hostname + ":" + port2 + "/index.html?getFiles=" + directoryString,
 		success: this.displayCode});
 }
 
@@ -66,7 +69,7 @@ var EditorHandler = function(urlString, request) {
 	
 	fileId = urlString.replace(/\//g, "_");
 	console.log(fileId + "x"); //To avoid Dom Exception 18 for some reason
-	sharejs.open(fileId, 'text', "http://" + document.location.hostname + ":8000/channel", function(error, docIn) {
+	sharejs.open(fileId, 'text', "http://" + document.location.hostname + ":" + port + "/channel", function(error, docIn) {
 		docIn.attach_ace(editor);
 		if (editor.getValue() == "") {
 			editor.setValue(request.responseText);
@@ -85,7 +88,7 @@ EditorHandler.prototype.save = function(saveFile) {
 	var lines = editor.getValue().split("\n");
 	var requestString = lines.join("&line=");
 	var request = jQuery.ajax( {
-		url: "http://" + document.location.hostname + ":8001/index.html?saveFile=" + saveFile + "&line=" + requestString,
+		url: "http://" + document.location.hostname + ":" + port2 + "/index.html?saveFile=" + saveFile + "&line=" + requestString,
 		success: function() {}
 	});
 }
@@ -96,7 +99,7 @@ EditorHandler.prototype.save = function(saveFile) {
 		new EditorHandler(urlString, request);
 	};
 	
-	var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":8001/index.html?getFile=" + urlString,
+     var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":" + port2 + "/index.html?getFile=" + urlString,
 	success: displayCode});
 };
 
@@ -110,7 +113,6 @@ EditorHandler.prototype.save = function(saveFile) {
 	 ide = document.getElementById("ide");
 	 codeDiv = document.getElementById("editor");
 	 nav = document.getElementById("nav");
-	 
 	 directoryString = "/Temp/temp-bladeset/blades/temp";
 	 
 	 

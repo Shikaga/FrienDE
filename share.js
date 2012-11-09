@@ -4,14 +4,6 @@ var sharejs = require('share').server;
 var fs = require('fs');
 var http = require("http");
 
-
-fs.readFile(__dirname + '/share.js', 'utf8', function (err,data) {
-  if (err) {
-    return console.log(err);
-  }
-  console.log(data);
-});
-
 function getDirectoryLink(directory, path) {
 	var fileLink = "<a onClick=\"loadDirectory('" + directory + "/" + path + "')\">" + "" + " + " + path + "/" + "</a><br />";
 	return fileLink;
@@ -104,7 +96,9 @@ var options = {db: {type: 'none'}, browserChannel: {cors: '*'}}; // See docs for
 // Attach the sharejs REST and Socket.io interfaces to the server
 sharejs.attach(server, options);
 
+port = parseInt(process.argv[2]);
+
 //server.listen(8000);
-http.createServer(server).listen(8000);
-http.createServer(server2).listen(8001);
+http.createServer(server).listen(port);
+http.createServer(server2).listen(port+1);
 console.log('Server running at http://127.0.0.1:8000/');
