@@ -1,5 +1,6 @@
 var connect = require('connect');
 var sharejs = require('share').server;
+var querystring = require('querystring');
 
 var fs = require('fs');
 var http = require("http");
@@ -43,7 +44,29 @@ var server = connect(
 	
 var server2 = connect(
     connect.logger(),
-	function (request, response) {	
+	function (request, response) {
+	    if (request.method == 'POST') {
+		response.writeHead(200, { 
+		    'Content-Type': 'text/html'
+		    ,'Access-Control-Allow-Origin': '*'});
+		request.content = "";
+		   request.addListener("data", function(chunk) {
+		    request.content += chunk;
+		   });
+	        request.addListener("end", function(chunk) {
+		    console.log(querystring.parse(request.content).file, querystring.parse(request.content).body);
+		    fs.writeFile(querystring.parse(request.content).file, querystring.parse(request.content).body, function(err) {
+			if(err) {
+			    console.log(err);
+			    response.end("File Save failed. Is the file locked perhaps?", 'utf-8');
+			} else {
+			    console.log("The file was saved!");
+			    response.end("Saved", 'utf-8');
+			}
+		    }); 
+		});
+		response.end("POST RECEIVED!");
+	    } else if (request.method == 'GET') {
 		var query = require('url').parse(request.url, true).query;
 		if (query != null) {
 		if (query.getFiles != null) {
@@ -70,24 +93,18 @@ var server2 = connect(
 				file = query.line;
 			} else {
 				file = query.line.join("\n");
-			}
-			fs.writeFile(query.saveFile, file, function(err) {
-				if(err) {
-					console.log(err);
-					response.end("File Save failed. Is the file locked perhaps?", 'utf-8');
-				} else {
-					console.log("The file was saved!");
-					response.end("Saved", 'utf-8');
-				}
-			}); 			
+			}			
 		} else {
+		    console.log("FAIL!", require('url').parse(request.url, true))
 			response.writeHead(404);
 			response.end();
 		}
 		} else {
+		    console.log("FAIL2!")
 			response.writeHead(404);
 			response.end();		
 		}
+	    }
 	}
 	);
 

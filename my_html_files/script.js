@@ -85,12 +85,13 @@ EditorHandler.prototype.cleanCodeEditor = function() {
 }
 
 EditorHandler.prototype.save = function(saveFile) {
-	var lines = editor.getValue().split("\n");
-	var requestString = lines.join("&line=");
-	var request = jQuery.ajax( {
-		url: "http://" + document.location.hostname + ":" + port2 + "/index.html?saveFile=" + saveFile + "&line=" + requestString,
-		success: function() {}
-	});
+    post("http://localhost.caplin.com:8001", {file: saveFile, body: editor.getValue()});
+//	var lines = editor.getValue().split("\n");
+//	var requestString = lines.join("&line=");
+//	var request = jQuery.ajax( {
+//		url: "http://" + document.location.hostname + ":" + port2 + "/index.html?saveFile=" + saveFile + "&line=" + requestString,
+//		success: function() {}
+//	});
 }
 
  function loadCode(urlString) {
@@ -134,6 +135,16 @@ EditorHandler.prototype.save = function(saveFile) {
 
 loadDirectory = function(directoryString) {
 	new DirectoryHandler(directoryString);	
+}
+
+function post(path, parameters) {
+    $.ajax({  
+	type: "POST",  
+	url: path,  
+	data: parameters,  
+	success: function() {  
+	}  
+    });  
 }
 
   initialise();
