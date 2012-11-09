@@ -20,30 +20,20 @@ setTimeout(function() {
 	loadJavaScript("share/ace.js");
 },100);
 
-function cleanCodeEditor() {
-	codeDiv.innerHTML = "";
-	codeDiv.env = null;
+var DirectoryHandler = function(directoryString) {
+	jQuery.ajax( {
+		url: "http://" + document.location.hostname + ":8001/index.html?getFiles=" + directoryString,
+		success: this.displayCode});
 }
 
-function loadDirectory(directoryString) {
-	
-	function displayCode() {
-		cleanCodeEditor();
+DirectoryHandler.prototype.displayCode = function(responseText) {
 		nav.style.overflow = "scroll";
 		nav.style.display = "block";
-		nav.innerHTML = request.responseText;
-	};
-
-	
-	var request = jQuery.ajax( {url: 
-		
-		"http://" + document.location.hostname + ":8001/index.html?getFiles=" + directoryString,
-		success: displayCode});
-	
-}
+		nav.innerHTML = responseText;
+};
 
 var EditorHandler = function(urlString, request) {
-	cleanCodeEditor();
+	this.cleanCodeEditor();
 	codeDiv.style.display = "block";
 	
 	request.responseText;
@@ -61,10 +51,11 @@ var EditorHandler = function(urlString, request) {
 	if (urlString.match(/.md$/) != null) {
 		editor.getSession().setMode("ace/mode/markdown");
 	}
+	var self = this;
 	editor.commands.addCommand({
 		name: 'save',
 		bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
-		exec: function() {saveCodeMirror(urlString)}
+		exec: function() {self.save(urlString)}
 	});			
 		
 	editor.commands.addCommand({
@@ -85,6 +76,20 @@ var EditorHandler = function(urlString, request) {
 	});
 };
 
+EditorHandler.prototype.cleanCodeEditor = function() {
+	codeDiv.innerHTML = "";
+	codeDiv.env = null;
+}
+
+EditorHandler.prototype.save = function(saveFile) {
+	var lines = editor.getValue().split("\n");
+	var requestString = lines.join("&line=");
+	var request = jQuery.ajax( {
+		url: "http://" + document.location.hostname + ":8001/index.html?saveFile=" + saveFile + "&line=" + requestString,
+		success: function() {}
+	});
+}
+
  function loadCode(urlString) {
 	
 	function displayCode() {
@@ -99,15 +104,6 @@ var EditorHandler = function(urlString, request) {
 		ide.style.display = "none";
 		document.body.focus();
 	};
-	
-	function saveCodeMirror(saveFile) {
-		var lines = editor.getValue().split("\n");
-		var requestString = lines.join("&line=");
-		var request = jQuery.ajax( {
-			url: "http://" + document.location.hostname + ":8001/index.html?saveFile=" + saveFile + "&line=" + requestString,
-			success: function() {}
-		});
-	};
   
   var initialise = function()
   {
@@ -118,10 +114,10 @@ var EditorHandler = function(urlString, request) {
 	 directoryString = "/Temp/temp-bladeset/blades/temp";
 	 
 	 
-	 function loadSpecificCode() {
+	 function showIDE() {
 		ide.style.display = "block";
 	 }
-	key('ctrl+enter', loadSpecificCode);
+	key('ctrl+enter', showIDE);
 	
 	key('esc', function(){ 
 		closeCodeMirror();
@@ -130,8 +126,8 @@ var EditorHandler = function(urlString, request) {
 	var directoryString = getParameter("directory");
 	directoryString = directoryString.replace(/\\/g,"/");
 	
-	loadDirectory(directoryString);	
-	loadSpecificCode();
+	new DirectoryHandler(directoryString);	
+	showIDE();
   }
 
   initialise();
