@@ -102,20 +102,25 @@ Editor.prototype.save = function(saveFile) {
 EditorHandler = function() {
     this.currentEditor = "";
     this.editors = new Array();
+    this.buttons = new Array();
     $.cookie.json = true;
     var oldEditors = $.cookie("open_buffers");
     for (var i=0; i < oldEditors.length; i++)
     {
         var file = oldEditors[i];
-        this.openFile(file);
+        this.createBufferButton(file);
+        this.buttons.push(file);
     }
 }
 
 EditorHandler.prototype.createBufferButton = function(urlString) {
-     var button = document.createElement("button");
-    button.innerHTML = urlString.match(/[^/]*$/);
-    button.onclick = function() {loadCode(urlString)};
-    header.appendChild(button);
+    if (this.buttons.indexOf(urlString) == -1) {        
+        var button = document.createElement("button");
+        button.innerHTML = urlString.match(/[^/]*$/);
+        button.onclick = function() {loadCode(urlString)};
+        header.appendChild(button);
+        this.buttons.push(urlString);
+    }
 }
 
 EditorHandler.prototype.openBuffer = function(urlString, request) {
