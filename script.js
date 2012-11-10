@@ -40,6 +40,7 @@ var Editor = function(filename, request, div) {
     this.request = request;
 	this.editor = this.createEditor(div);
 	this.setSaveHotkey();
+    this.setSwitchHotkey();
     this.bindToShareJS();
 };
 
@@ -77,9 +78,21 @@ Editor.prototype.createEditor = function(div) {
 Editor.prototype.setSaveHotkey = function() {
     var self = this;
     this.editor.commands.addCommand({
-    	name: 'save',
+        name: 'save',
 		bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
 		exec: function() {self.save(self.filename)}
+	});		
+}
+
+Editor.prototype.setSwitchHotkey = function() {
+    var self = this;
+    this.editor.commands.addCommand({
+        name: 'switch',
+		bindKey: {win: 'Ctrl+\\', mac: 'Ctrl+\\'},
+		exec: function(event, x, y) {;
+            editorHandler.switchEditor();
+            return true;
+    	}
 	});		
 }
 
@@ -95,7 +108,8 @@ Editor.prototype.save = function(saveFile) {
 }
 
 EditorHandler = function() {
-    
+    this.editors = new Array();
+    this.currentEditor = "";
 }
 
 EditorHandler.prototype.openFile = function(urlString, request) {
@@ -104,12 +118,15 @@ EditorHandler.prototype.openFile = function(urlString, request) {
         console.log("EditorMap", editorMap[urlString]);
         currentDiv = editorMap[urlString];
         currentDiv.style.display = "block";
+        this.currentEditor = urlString;
     } else {
         
         var button = document.createElement("button");
         button.innerHTML = urlString.match(/[^/]*$/);
         button.onclick = function() {loadCode(urlString)};
         header.appendChild(button);
+        this.editors.push(urlString);
+        this.currentEditor = urlString;
         
         currentDiv.style.display = "none";
         editor = document.createElement("div");
@@ -128,6 +145,14 @@ EditorHandler.prototype.openFile = function(urlString, request) {
         editorsDiv.appendChild(editor);
 	    new Editor(urlString, request, editor);
     }
+}
+
+EditorHandler.prototype.switchEditor = function() {
+    var position = this.editors.indexOf(this.currentEditor);
+    var nextEditor = (position+1) % this.editors.length;
+    console.log(this.editors, position+1, this.editors.length, nextEditor);
+    this.openFile(this.editors[nextEditor]);
+    
 }
 
 function loadCode(urlString) {
