@@ -37,25 +37,25 @@ DirectoryHandler.prototype.displayCode = function(responseText) {
 
 var Editor = function(filename, request) {
     this.filename = filename;
+    this.request = request;
     this.cleanDiv();
-	
 	this.editor = this.createEditor();
-
 	this.setSaveHotkey();
-	
-	fileId = filename.replace(/\//g, "_");
-	console.log(fileId + "x"); //To avoid Dom Exception 18 for some reason
-    var self = this;
-	sharejs.open(fileId, 'text', "http://" + document.location.hostname + ":" + port + "/channel", function(error, docIn) {
-		docIn.attach_ace(self.editor);
-		if (self.editor.getValue() == "") {
-			self.editor.setValue(request.responseText);
-		}
-		self.editor.moveCursorTo(0,0);
-		doc = docIn;
-	});
+    this.bindToShareJS();
 };
 
+Editor.prototype.bindToShareJS = function() {
+    fileId = this.filename.replace(/\//g, "_");
+        var self = this;
+        sharejs.open(fileId, 'text', "http://" + document.location.hostname + ":" + port + "/channel", function(error, docIn) {
+    		docIn.attach_ace(self.editor);
+    		if (self.editor.getValue() == "") {
+    			self.editor.setValue(self.request.responseText);
+    		}
+    		self.editor.moveCursorTo(0,0);
+    		doc = docIn;
+    	});
+}
 Editor.prototype.createEditor = function() {
     var editor = ace.edit("editor");
     
