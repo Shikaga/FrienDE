@@ -14,17 +14,6 @@ function loadJavaScript(fileName) {
    head.appendChild(script);
 }
 
-/*loadJavaScript("channel/bcsocket.js");
-setTimeout(function() {
-	loadJavaScript("share/share.js");
-},10);
-setTimeout(function() {
-	loadJavaScript("share/ace.js");
-    setTimeout(function() {
-    
-    },100);
-},20);*/
-
 var DirectoryHandler = function(directoryString) {
 	jQuery.ajax( {
 		url: "http://" + document.location.hostname + ":" + port + "/nonexistantfile.html?getFiles=" + directoryString,
@@ -60,10 +49,11 @@ Editor.prototype.bindToShareJS = function() {
 }
 
 Editor.prototype.createEditor = function(div) {
-    var editor = ace.edit(div.id);
     
-	editor.setTheme("ace/theme/monokai");
-	editor.getSession().setUseWrapMode(true);
+        var editor = ace.edit(div.id);
+        
+    	editor.setTheme("ace/theme/monokai");
+    	editor.getSession().setUseWrapMode(true);
 	
 	if (this.filename.match(/.js$/) != null) {
 		editor.getSession().setMode("ace/mode/javascript");
@@ -116,7 +106,8 @@ EditorHandler = function() {
     var oldEditors = $.cookie("open_buffers");
     for (var i=0; i < oldEditors.length; i++)
     {
-        this.openFile(oldEditors[i]);
+        var file = oldEditors[i];
+        this.openFile(file);
     }
 }
 
@@ -167,6 +158,7 @@ EditorHandler.prototype.openBuffer = function(urlString, request) {
 EditorHandler.prototype.openFile = function(urlString) {
     var self = this;
      var displayCode = function() {
+        console.log("REQUEST!")
         self.openBuffer(urlString, request);
     }
     
@@ -180,10 +172,6 @@ EditorHandler.prototype.switchEditor = function() {
 
     this.openFile(this.editors[nextEditor]);    
 }
-
-function loadCode(urlString) {
-    editorHandler.openBuffer(urlString);
-};
 
 function closeCodeMirror() { 
 	ide.style.display = "none";
@@ -218,6 +206,10 @@ var initialise = function()
     editorHandler = new EditorHandler();
     showIDE();
 }
+
+function loadCode(urlString) {
+    editorHandler.openFile(urlString);
+};
 
 loadDirectory = function(directoryString) {
 	new DirectoryHandler(directoryString);	
