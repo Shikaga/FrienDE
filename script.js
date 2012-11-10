@@ -118,6 +118,7 @@ EditorHandler.prototype.openFile = function(urlString, request) {
         console.log("EditorMap", editorMap[urlString]);
         currentDiv = editorMap[urlString];
         currentDiv.style.display = "block";
+        currentDiv.env.editor.focus();
         this.currentEditor = urlString;
     } else {
         
@@ -151,8 +152,8 @@ EditorHandler.prototype.switchEditor = function() {
     var position = this.editors.indexOf(this.currentEditor);
     var nextEditor = (position+1) % this.editors.length;
     console.log(this.editors, position+1, this.editors.length, nextEditor);
-    this.openFile(this.editors[nextEditor]);
-    
+
+    this.openFile(this.editors[nextEditor]);    
 }
 
 function loadCode(urlString) {
