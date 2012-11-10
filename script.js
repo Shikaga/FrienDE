@@ -94,31 +94,46 @@ Editor.prototype.save = function(saveFile) {
     });  
 }
 
+EditorHandler = function() {
+    
+}
+
+EditorHandler.prototype.openFile = function(urlString, request) {
+    if (editorMap[urlString] != null) {
+        currentDiv.style.display = "none";
+        console.log("EditorMap", editorMap[urlString]);
+        currentDiv = editorMap[urlString];
+        currentDiv.style.display = "block";
+    } else {
+        
+        var button = document.createElement("button");
+        button.innerHTML = urlString.match(/[^/]*$/);
+        button.onclick = function() {loadCode(urlString)};
+        header.appendChild(button);
+        
+        currentDiv.style.display = "none";
+        editor = document.createElement("div");
+        //background-color:white; position:absolute; z-index:1000; margin-top:10%; width:80%; height:90%; margin-left:20%;
+        editor.style.backgroundColor = "white";
+        editor.style.position = "absolute";
+        editor.style.zIndex = "1000";
+        editor.style.marginTop = "10%";
+        editor.style.width = "80%";
+        editor.style.height = "90%";
+        editor.style.marginLeft = "20%";
+        
+        editor.id = editorsId++;
+        currentDiv = editor;
+        editorMap[urlString] = editor;
+        editorsDiv.appendChild(editor);
+	    new Editor(urlString, request, editor);
+    }
+}
+
 function loadCode(urlString) {
 	
 	function displayCode() {
-        if (editorMap[urlString] != null) {
-            currentDiv.style.display = "none";
-            console.log("EditorMap", editorMap[urlString]);
-            currentDiv = editorMap[urlString];
-            currentDiv.style.display = "block";
-        } else {
-            currentDiv.style.display = "none";
-            editor = document.createElement("div");
-            //background-color:white; position:absolute; z-index:1000; margin-top:10%; width:80%; height:90%; margin-left:20%;
-            editor.style.backgroundColor = "white";
-            editor.style.position = "absolute";
-            editor.style.zIndex = "1000";
-            editor.style.marginTop = "10%";
-            editor.style.width = "80%";
-            editor.style.height = "90%";
-            editor.style.marginLeft = "20%";
-            editor.id = editorsId++;
-            currentDiv = editor;
-            editorMap[urlString] = editor;
-            editorsDiv.appendChild(editor);
-		    new Editor(urlString, request, editor);
-        }
+        editorHandler.openFile(urlString, request);
 	};
 	
      var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":" + port2 + "/index.html?getFile=" + urlString, success: displayCode});
@@ -137,6 +152,7 @@ var initialise = function()
     editorsDiv = document.getElementById("editors");
     codeDiv = document.getElementById("editor");
     nav = document.getElementById("nav");
+    header = document.getElementById("header");
     currentDiv = codeDiv;
     directoryString = "/Temp/temp-bladeset/blades/temp";
 
@@ -153,6 +169,7 @@ var initialise = function()
     directoryString = directoryString.replace(/\\/g,"/");
 
     new DirectoryHandler(directoryString);	
+    editorHandler = new EditorHandler();
     showIDE();
 }
 
