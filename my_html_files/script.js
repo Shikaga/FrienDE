@@ -36,66 +36,66 @@ DirectoryHandler.prototype.displayCode = function(responseText) {
 };
 
 var Editor = function(filename, request) {
-    var self = this;
-    this.cleanCodeEditor();
-	codeDiv.style.display = "block";
+    this.filename = filename;
+    this.cleanDiv();
 	
-	request.responseText;
-	editor = this.createEditor(filename);
+	this.editor = this.createEditor();
 
-	this.setSaveHotkey(editor, filename);
+	this.setSaveHotkey();
 	
 	fileId = filename.replace(/\//g, "_");
 	console.log(fileId + "x"); //To avoid Dom Exception 18 for some reason
+    var self = this;
 	sharejs.open(fileId, 'text', "http://" + document.location.hostname + ":" + port + "/channel", function(error, docIn) {
-		docIn.attach_ace(editor);
-		if (editor.getValue() == "") {
-			editor.setValue(request.responseText);
+		docIn.attach_ace(self.editor);
+		if (self.editor.getValue() == "") {
+			self.editor.setValue(request.responseText);
 		}
-		editor.moveCursorTo(0,0);
+		self.editor.moveCursorTo(0,0);
 		doc = docIn;
 	});
 };
 
-Editor.prototype.createEditor = function(filename) {
+Editor.prototype.createEditor = function() {
     var editor = ace.edit("editor");
     
 	editor.setTheme("ace/theme/monokai");
 	editor.getSession().setUseWrapMode(true);
 	
-	if (filename.match(/.js$/) != null) {
+	if (this.filename.match(/.js$/) != null) {
 		editor.getSession().setMode("ace/mode/javascript");
 	}
-	if (filename.match(/.html$/) != null) {
+	if (this.filename.match(/.html$/) != null) {
 		editor.getSession().setMode("ace/mode/html");
 	}
-	if (filename.match(/.md$/) != null) {
+	if (this.filename.match(/.md$/) != null) {
 		editor.getSession().setMode("ace/mode/markdown");
 	}
     return editor;
 }
 
-Editor.prototype.setSaveHotkey = function(editor, filename) {
+Editor.prototype.setSaveHotkey = function() {
     var self = this;
-editor.commands.addCommand({
+    this.editor.commands.addCommand({
     	name: 'save',
 		bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
-		exec: function() {self.save(filename)}
+		exec: function() {self.save(self.filename)}
 	});		
 }
 
-Editor.prototype.cleanCodeEditor = function() {
+Editor.prototype.cleanDiv = function() {
 	codeDiv.innerHTML = "";
 	codeDiv.env = null;
 }
 
 Editor.prototype.save = function(saveFile) {
+    var self = this;
     $.ajax({  
-    type: "POST",  
-	url: "http://" + document.location.hostname +":" + port2,
-	data: {file: saveFile, body: editor.getValue()},
-	success: function() {  
-	}  
+        type: "POST",  
+    	url: "http://" + document.location.hostname +":" + port2,
+    	data: {file: saveFile, body: self.editor.getValue()},
+    	success: function() {  
+    	}  
     });  
 }
 
