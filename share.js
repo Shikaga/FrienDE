@@ -85,7 +85,7 @@ function handleGet(request, response) {
 
 var server = connect(
     connect.logger(),
-	connect.static('my_html_files')
+	connect.static(__dirname)
     );
 	
 var server2 = connect(
