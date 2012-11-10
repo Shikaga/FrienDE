@@ -46,16 +46,17 @@ var Editor = function(filename, request) {
 
 Editor.prototype.bindToShareJS = function() {
     fileId = this.filename.replace(/\//g, "_");
-        var self = this;
-        sharejs.open(fileId, 'text', "http://" + document.location.hostname + ":" + port + "/channel", function(error, docIn) {
-    		docIn.attach_ace(self.editor);
-    		if (self.editor.getValue() == "") {
-    			self.editor.setValue(self.request.responseText);
-    		}
-    		self.editor.moveCursorTo(0,0);
-    		doc = docIn;
-    	});
+    var self = this;
+    sharejs.open(fileId, 'text', "http://" + document.location.hostname + ":" + port + "/channel", function(error, docIn) {
+		docIn.attach_ace(self.editor);
+		if (self.editor.getValue() == "") {
+			self.editor.setValue(self.request.responseText);
+		}
+		self.editor.moveCursorTo(0,0);
+		doc = docIn;
+	});
 }
+
 Editor.prototype.createEditor = function() {
     var editor = ace.edit("editor");
     
