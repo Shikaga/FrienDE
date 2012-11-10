@@ -35,11 +35,10 @@ DirectoryHandler.prototype.displayCode = function(responseText) {
 		nav.innerHTML = responseText;
 };
 
-var Editor = function(filename, request) {
+var Editor = function(filename, request, div) {
     this.filename = filename;
     this.request = request;
-    this.cleanDiv();
-	this.editor = this.createEditor();
+	this.editor = this.createEditor(div);
 	this.setSaveHotkey();
     this.bindToShareJS();
 };
@@ -57,8 +56,8 @@ Editor.prototype.bindToShareJS = function() {
 	});
 }
 
-Editor.prototype.createEditor = function() {
-    var editor = ace.edit("editor");
+Editor.prototype.createEditor = function(div) {
+    var editor = ace.edit(div.id);
     
 	editor.setTheme("ace/theme/monokai");
 	editor.getSession().setUseWrapMode(true);
@@ -84,11 +83,6 @@ Editor.prototype.setSaveHotkey = function() {
 	});		
 }
 
-Editor.prototype.cleanDiv = function() {
-	codeDiv.innerHTML = "";
-	codeDiv.env = null;
-}
-
 Editor.prototype.save = function(saveFile) {
     var self = this;
     $.ajax({  
@@ -103,7 +97,28 @@ Editor.prototype.save = function(saveFile) {
 function loadCode(urlString) {
 	
 	function displayCode() {
-		new Editor(urlString, request);
+        if (editorMap[urlString] != null) {
+            currentDiv.style.display = "none";
+            console.log("EditorMap", editorMap[urlString]);
+            currentDiv = editorMap[urlString];
+            currentDiv.style.display = "block";
+        } else {
+            currentDiv.style.display = "none";
+            editor = document.createElement("div");
+            //background-color:white; position:absolute; z-index:1000; margin-top:10%; width:80%; height:90%; margin-left:20%;
+            editor.style.backgroundColor = "white";
+            editor.style.position = "absolute";
+            editor.style.zIndex = "1000";
+            editor.style.marginTop = "10%";
+            editor.style.width = "80%";
+            editor.style.height = "90%";
+            editor.style.marginLeft = "20%";
+            editor.id = editorsId++;
+            currentDiv = editor;
+            editorMap[urlString] = editor;
+            editorsDiv.appendChild(editor);
+		    new Editor(urlString, request, editor);
+        }
 	};
 	
      var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":" + port2 + "/index.html?getFile=" + urlString, success: displayCode});
@@ -116,12 +131,15 @@ function closeCodeMirror() {
   
 var initialise = function()
 {
+    editorMap = {};
+    editorsId = 0;
     ide = document.getElementById("ide");
+    editorsDiv = document.getElementById("editors");
     codeDiv = document.getElementById("editor");
     nav = document.getElementById("nav");
+    currentDiv = codeDiv;
     directoryString = "/Temp/temp-bladeset/blades/temp";
- 
- 
+
     function showIDE() {
 	    ide.style.display = "block";
     }
