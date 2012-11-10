@@ -1,5 +1,4 @@
 port = parseInt(document.location.port);
-port2 = port + 1;
 
 function getParameter(l_sName)
 {
@@ -15,17 +14,20 @@ function loadJavaScript(fileName) {
    head.appendChild(script);
 }
 
-loadJavaScript("channel/bcsocket.js");
+/*loadJavaScript("channel/bcsocket.js");
 setTimeout(function() {
 	loadJavaScript("share/share.js");
-},50);
+},10);
 setTimeout(function() {
 	loadJavaScript("share/ace.js");
-},100);
+    setTimeout(function() {
+    
+    },100);
+},20);*/
 
 var DirectoryHandler = function(directoryString) {
 	jQuery.ajax( {
-		url: "http://" + document.location.hostname + ":" + port2 + "/index.html?getFiles=" + directoryString,
+		url: "http://" + document.location.hostname + ":" + port + "/nonexistantfile.html?getFiles=" + directoryString,
 		success: this.displayCode});
 }
 
@@ -100,7 +102,7 @@ Editor.prototype.save = function(saveFile) {
     var self = this;
     $.ajax({  
         type: "POST",  
-    	url: "http://" + document.location.hostname +":" + port2,
+    	url: "http://" + document.location.hostname +":" + port,
     	data: {file: saveFile, body: self.editor.getValue()},
     	success: function() {  
     	}  
@@ -108,44 +110,67 @@ Editor.prototype.save = function(saveFile) {
 }
 
 EditorHandler = function() {
-    this.editors = new Array();
     this.currentEditor = "";
+    this.editors = new Array();
+    $.cookie.json = true;
+    var oldEditors = $.cookie("open_buffers");
+    for (var i=0; i < oldEditors.length; i++)
+    {
+        this.openFile(oldEditors[i]);
+    }
 }
 
-EditorHandler.prototype.openFile = function(urlString, request) {
-    if (editorMap[urlString] != null) {
-        currentDiv.style.display = "none";
-        console.log("EditorMap", editorMap[urlString]);
-        currentDiv = editorMap[urlString];
-        currentDiv.style.display = "block";
-        currentDiv.env.editor.focus();
-        this.currentEditor = urlString;
-    } else {
-        
-        var button = document.createElement("button");
-        button.innerHTML = urlString.match(/[^/]*$/);
-        button.onclick = function() {loadCode(urlString)};
-        header.appendChild(button);
-        this.editors.push(urlString);
-        this.currentEditor = urlString;
-        
-        currentDiv.style.display = "none";
-        editor = document.createElement("div");
-        //background-color:white; position:absolute; z-index:1000; margin-top:10%; width:80%; height:90%; margin-left:20%;
-        editor.style.backgroundColor = "white";
-        editor.style.position = "absolute";
-        editor.style.zIndex = "1000";
-        editor.style.marginTop = "10%";
-        editor.style.width = "80%";
-        editor.style.height = "90%";
-        editor.style.marginLeft = "20%";
-        
-        editor.id = editorsId++;
-        currentDiv = editor;
-        editorMap[urlString] = editor;
-        editorsDiv.appendChild(editor);
-	    new Editor(urlString, request, editor);
+EditorHandler.prototype.createBufferButton = function(urlString) {
+     var button = document.createElement("button");
+    button.innerHTML = urlString.match(/[^/]*$/);
+    button.onclick = function() {loadCode(urlString)};
+    header.appendChild(button);
+}
+
+EditorHandler.prototype.openBuffer = function(urlString, request) {
+        if (editorMap[urlString] != null) {
+            currentDiv.style.display = "none";
+            console.log("EditorMap", editorMap[urlString]);
+            currentDiv = editorMap[urlString];
+            currentDiv.style.display = "block";
+            currentDiv.env.editor.focus();
+            this.currentEditor = urlString;
+        } else {
+            
+           this.createBufferButton(urlString);
+            
+            this.editors.push(urlString);
+            $.cookie.json = true;
+            $.cookie("open_buffers", this.editors);
+            
+            this.currentEditor = urlString;
+            
+            currentDiv.style.display = "none";
+            editor = document.createElement("div");
+            //background-color:white; position:absolute; z-index:1000; margin-top:10%; width:80%; height:90%; margin-left:20%;
+            editor.style.backgroundColor = "white";
+            editor.style.position = "absolute";
+            editor.style.zIndex = "1000";
+            editor.style.marginTop = "10%";
+            editor.style.width = "80%";
+            editor.style.height = "90%";
+            editor.style.marginLeft = "20%";
+            
+            editor.id = editorsId++;
+            currentDiv = editor;
+            editorMap[urlString] = editor;
+            editorsDiv.appendChild(editor);
+    	    new Editor(urlString, request, editor);
+        }
+}
+
+EditorHandler.prototype.openFile = function(urlString) {
+    var self = this;
+     var displayCode = function() {
+        self.openBuffer(urlString, request);
     }
+    
+    var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":" + port + "/nonexistantfile.html?getFile=" + urlString, success: displayCode});
 }
 
 EditorHandler.prototype.switchEditor = function() {
@@ -157,12 +182,7 @@ EditorHandler.prototype.switchEditor = function() {
 }
 
 function loadCode(urlString) {
-	
-	function displayCode() {
-        editorHandler.openFile(urlString, request);
-	};
-	
-     var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":" + port2 + "/index.html?getFile=" + urlString, success: displayCode});
+    editorHandler.openBuffer(urlString);
 };
 
 function closeCodeMirror() { 
@@ -202,5 +222,4 @@ var initialise = function()
 loadDirectory = function(directoryString) {
 	new DirectoryHandler(directoryString);	
 }
-
-  initialise();
+initialise();

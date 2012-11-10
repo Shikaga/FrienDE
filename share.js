@@ -74,7 +74,7 @@ function handleGet(request, response) {
     				}
     			)	
     		} else {
-    			response.writeHead(404);
+                response.writeHead(404);
     			response.end();
     		}
 		} else {
@@ -88,23 +88,19 @@ var server = connect(
 	connect.static(__dirname)
     );
 	
-var server2 = connect(
-    connect.logger(),
-	function (request, response) {
-	    if (request.method == 'POST') {
-		    handlePost(request, response);  	
-	    } else if (request.method == 'GET') {
-		    handleGet(request, response);
-	    }
-	}
-);
-
 var options = {db: {type: 'none'}, browserChannel: {cors: '*'}}; // See docs for options. {type: 'redis'} to enable persistance.
 
 sharejs.attach(server, options);
 
+server.use(    function (request, response) {
+        if (request.method == 'POST') {
+            handlePost(request, response);
+        } else if (request.method == 'GET'){
+            handleGet(request, response);
+        }
+    });
+
 port = parseInt(process.argv[2]);
 
 http.createServer(server).listen(port);
-http.createServer(server2).listen(port+1);
-console.log('Server running at http://127.0.0.1:' + port + ' - ' + port+1 + '' +  '/');
+console.log('Server running at http://127.0.0.1:' + port +  '/');
