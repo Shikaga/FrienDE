@@ -41,20 +41,7 @@ var Editor = function(filename, request) {
 	codeDiv.style.display = "block";
 	
 	request.responseText;
-	editor = ace.edit("editor");
-	
-	editor.setTheme("ace/theme/monokai");
-	editor.getSession().setUseWrapMode(true);
-	
-	if (filename.match(/.js$/) != null) {
-		editor.getSession().setMode("ace/mode/javascript");
-	}
-	if (filename.match(/.html$/) != null) {
-		editor.getSession().setMode("ace/mode/html");
-	}
-	if (filename.match(/.md$/) != null) {
-		editor.getSession().setMode("ace/mode/markdown");
-	}
+	editor = this.createEditor(filename);
 
 	this.setSaveHotkey(editor, filename);
 	
@@ -69,6 +56,24 @@ var Editor = function(filename, request) {
 		doc = docIn;
 	});
 };
+
+Editor.prototype.createEditor = function(filename) {
+    var editor = ace.edit("editor");
+    
+	editor.setTheme("ace/theme/monokai");
+	editor.getSession().setUseWrapMode(true);
+	
+	if (filename.match(/.js$/) != null) {
+		editor.getSession().setMode("ace/mode/javascript");
+	}
+	if (filename.match(/.html$/) != null) {
+		editor.getSession().setMode("ace/mode/html");
+	}
+	if (filename.match(/.md$/) != null) {
+		editor.getSession().setMode("ace/mode/markdown");
+	}
+    return editor;
+}
 
 Editor.prototype.setSaveHotkey = function(editor, filename) {
     var self = this;
