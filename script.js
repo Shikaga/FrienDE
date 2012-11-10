@@ -88,7 +88,7 @@ Editor.prototype.setSwitchHotkey = function() {
     var self = this;
     this.editor.commands.addCommand({
         name: 'switch',
-		bindKey: {win: 'Ctrl+\\', mac: 'Ctrl+\\'},
+		bindKey: {win: 'Ctrl+`', mac: 'Ctrl+`'},
 		exec: function(event, x, y) {;
             editorHandler.switchEditor();
             return true;
