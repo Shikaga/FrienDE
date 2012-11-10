@@ -35,7 +35,7 @@ DirectoryHandler.prototype.displayCode = function(responseText) {
 		nav.innerHTML = responseText;
 };
 
-var EditorHandler = function(urlString, request) {
+var Editor = function(filename, request) {
     var self = this;
     this.cleanCodeEditor();
 	codeDiv.style.display = "block";
@@ -46,29 +46,19 @@ var EditorHandler = function(urlString, request) {
 	editor.setTheme("ace/theme/monokai");
 	editor.getSession().setUseWrapMode(true);
 	
-	if (urlString.match(/.js$/) != null) {
+	if (filename.match(/.js$/) != null) {
 		editor.getSession().setMode("ace/mode/javascript");
 	}
-	if (urlString.match(/.html$/) != null) {
+	if (filename.match(/.html$/) != null) {
 		editor.getSession().setMode("ace/mode/html");
 	}
-	if (urlString.match(/.md$/) != null) {
+	if (filename.match(/.md$/) != null) {
 		editor.getSession().setMode("ace/mode/markdown");
 	}
 
-	editor.commands.addCommand({
-		name: 'save',
-		bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
-		exec: function() {self.save(urlString)}
-	});			
-		
-	editor.commands.addCommand({
-		name: 'close',
-		bindKey: {win: 'Esc', mac: 'Esc'},
-		exec: function() {closeCodeMirror()}
-	});
+	this.setSaveHotkey(editor, filename);
 	
-	fileId = urlString.replace(/\//g, "_");
+	fileId = filename.replace(/\//g, "_");
 	console.log(fileId + "x"); //To avoid Dom Exception 18 for some reason
 	sharejs.open(fileId, 'text', "http://" + document.location.hostname + ":" + port + "/channel", function(error, docIn) {
 		docIn.attach_ace(editor);
@@ -80,12 +70,21 @@ var EditorHandler = function(urlString, request) {
 	});
 };
 
-EditorHandler.prototype.cleanCodeEditor = function() {
+Editor.prototype.setSaveHotkey = function(editor, filename) {
+    var self = this;
+editor.commands.addCommand({
+    	name: 'save',
+		bindKey: {win: 'Ctrl-s', mac: 'Command-s'},
+		exec: function() {self.save(filename)}
+	});		
+}
+
+Editor.prototype.cleanCodeEditor = function() {
 	codeDiv.innerHTML = "";
 	codeDiv.env = null;
 }
 
-EditorHandler.prototype.save = function(saveFile) {
+Editor.prototype.save = function(saveFile) {
     $.ajax({  
     type: "POST",  
 	url: "http://" + document.location.hostname +":" + port2,
@@ -98,7 +97,7 @@ EditorHandler.prototype.save = function(saveFile) {
 function loadCode(urlString) {
 	
 	function displayCode() {
-		new EditorHandler(urlString, request);
+		new Editor(urlString, request);
 	};
 	
      var request = jQuery.ajax( {url: "http://" + document.location.hostname + ":" + port2 + "/index.html?getFile=" + urlString, success: displayCode});
