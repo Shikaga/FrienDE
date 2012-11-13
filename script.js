@@ -62,7 +62,10 @@ Editor.prototype.createEditor = function(div) {
 		editor.getSession().setMode("ace/mode/html");
 	}
 	if (this.filename.match(/.md$/) != null) {
-		editor.getSession().setMode("ace/mode/markdown");
+    	editor.getSession().setMode("ace/mode/markdown");
+	}
+    if (this.filename.match(/.rb$/) != null) {
+    	editor.getSession().setMode("ace/mode/ruby");
 	}
     return editor;
 }
