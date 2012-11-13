@@ -105,12 +105,14 @@ EditorHandler = function() {
     this.buttons = new Array();
     $.cookie.json = true;
     var oldEditors = $.cookie("open_buffers");
-    for (var i=0; i < oldEditors.length; i++)
-    {
-        var file = oldEditors[i];
-        this.createBufferButton(file);
-        this.buttons.push(file);
-    }
+	if (oldEditors != null) {
+		for (var i=0; i < oldEditors.length; i++)
+		{
+			var file = oldEditors[i];
+			this.createBufferButton(file);
+			this.buttons.push(file);
+		}
+	}
 }
 
 EditorHandler.prototype.createBufferButton = function(urlString) {
