@@ -53,7 +53,7 @@ function handlePost(request, response) {
     		}
     	}); 
     });
-	response.end("POST RECEIVED!");  
+	//response.end("POST RECEIVED!");  
 }
 
 function handleGet(request, response) {

@@ -97,7 +97,9 @@ Editor.prototype.save = function(saveFile) {
         type: "POST",  
     	url: "http://" + document.location.hostname +":" + port,
     	data: {file: saveFile, body: self.editor.getValue()},
-    	success: function() {  
+    	success: function(e) { 
+            if (e !== "Saved")
+            alert(e);
     	}  
     });  
 }
