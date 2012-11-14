@@ -213,7 +213,7 @@ var initialise = function()
 
     var directoryString = getParameter("directory");
     directoryString = directoryString.replace(/\\/g,"/");
-
+    currentDirectory = directoryString;
     new DirectoryHandler(directoryString);	
     editorHandler = new EditorHandler();
     showIDE();
@@ -224,6 +224,11 @@ function loadCode(urlString) {
 };
 
 loadDirectory = function(directoryString) {
+    currentDirectory = directoryString
 	new DirectoryHandler(directoryString);	
+}
+
+function refreshDirectory() {
+    loadDirectory(currentDirectory);
 }
 initialise();
