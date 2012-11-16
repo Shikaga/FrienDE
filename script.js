@@ -35,6 +35,11 @@ var Editor = function(filename, request, div) {
     this.bindToShareJS();
 };
 
+function setFilename(filename) {
+    var fileNameDiv = document.getElementById("filename");
+    fileNameDiv.innerHTML = filename;
+}
+
 Editor.prototype.bindToShareJS = function() {
     fileId = this.filename.replace(/\//g, "_");
     var self = this;
@@ -131,6 +136,7 @@ EditorHandler.prototype.createBufferButton = function(urlString) {
 }
 
 EditorHandler.prototype.openBuffer = function(urlString, request) {
+        setFilename(urlString);
         if (editorMap[urlString] != null) {
             currentDiv.style.display = "none";
             console.log("EditorMap", editorMap[urlString]);
@@ -170,7 +176,6 @@ EditorHandler.prototype.openBuffer = function(urlString, request) {
 EditorHandler.prototype.openFile = function(urlString) {
     var self = this;
      var displayCode = function() {
-        console.log("REQUEST!")
         self.openBuffer(urlString, request);
     }
     
